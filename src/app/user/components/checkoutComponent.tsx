@@ -197,7 +197,7 @@ export default function CheckOutComponent({ params }: any) {
         currency: "INR",
         name: "Your Store",
         description: "Order Payment",
-        order_id: payment.OrderId,
+        order_id: payment.RazorpayId,
         handler: async function (response: any) {
           console.log(response);
           const verifyResponse = await fetch(
