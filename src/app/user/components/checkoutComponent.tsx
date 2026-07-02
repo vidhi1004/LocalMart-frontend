@@ -106,7 +106,7 @@ const loadRazorpayScript = () => {
   });
 };
 
-export default function CheckOutComponent({ params }) {
+export default function CheckOutComponent({ params }: any) {
   const items = params;
   const router = useRouter();
 
@@ -189,14 +189,15 @@ export default function CheckOutComponent({ params }) {
       }
 
       const payment = await paymentResponse.json();
+      console.log("Payment Response:", payment);
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: Math.round(Number(payment.amount) * 100),
-        currency: payment.currency,
+        currency: "INR",
         name: "Your Store",
         description: "Order Payment",
-        order_id: payment.razorpayOrderId,
+        order_id: payment.OrderId,
         handler: async function (response: any) {
           console.log(response);
           const verifyResponse = await fetch(
