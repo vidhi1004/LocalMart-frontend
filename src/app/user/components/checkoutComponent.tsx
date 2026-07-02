@@ -197,7 +197,7 @@ export default function CheckOutComponent({ params }: any) {
         currency: "INR",
         name: "Your Store",
         description: "Order Payment",
-        order_id: payment.RazorpayId,
+        order_id: payment.RazorpayOrderId,
         handler: async function (response: any) {
           console.log(response);
           const verifyResponse = await fetch(
@@ -250,7 +250,7 @@ export default function CheckOutComponent({ params }: any) {
           color: "#2563EB",
         },
       };
-
+      console.log("Options:", options);
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {

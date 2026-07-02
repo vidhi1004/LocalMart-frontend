@@ -70,6 +70,7 @@
 "use client";
 
 import { useState } from "react";
+export const dynamic = "force-dynamic";
 import { ProductInterface } from "../interface/product.interface";
 import { CategoryInterface } from "../interface/category.interface";
 import { ProductCard } from "./product_components/ProductCard";
@@ -100,7 +101,6 @@ export default function FilterComponent({
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-     
       <div className="relative max-w-xl mx-auto w-full">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
           <svg
@@ -127,7 +127,6 @@ export default function FilterComponent({
         />
       </div>
 
-      
       <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-3 mask-image-inline scrollbar-none">
         <button
           onClick={() => setSelectedCategory("ALL")}
@@ -154,7 +153,6 @@ export default function FilterComponent({
         ))}
       </div>
 
-     
       {searchResult.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-slate-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 max-w-md mx-auto">
           <svg
@@ -179,7 +177,6 @@ export default function FilterComponent({
           </p>
         </div>
       ) : (
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
           {searchResult.map((product) => (
             <ProductCard key={product.id} product={product} />
