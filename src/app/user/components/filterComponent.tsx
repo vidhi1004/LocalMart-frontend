@@ -69,24 +69,58 @@
 
 "use client";
 
-import { useState } from "react";
-export const dynamic = "force-dynamic";
+import { useState, useEffect } from "react";
 import { ProductInterface } from "../interface/product.interface";
 import { CategoryInterface } from "../interface/category.interface";
 import { ProductCard } from "./product_components/ProductCard";
 
-interface FilterProps {
-  products: ProductInterface[];
-  categories: CategoryInterface[];
-}
+// Assuming API_BASE_URL comes from your env, update this if it's imported from elsewhere
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export default function FilterComponent({
-  products = [],
-  categories = [],
-}: FilterProps) {
+export default function FilterComponent() {
+  const [products, setProducts] = useState<ProductInterface[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch both datasets concurrently to save time
+        const [productRes, categoryRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/catalog/products`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }),
+          fetch(`${API_BASE_URL}/catalog/categories`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          })
+        ]);
+
+        if (productRes.ok) {
+          const productData = await productRes.json();
+          setProducts(productData.products || []);
+        }
+
+        if (categoryRes.ok) {
+          const categoryData = await categoryRes.json();
+          setCategories(categoryData.categories || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch catalog data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // Filter Logic
   const filteredProducts =
     selectedCategory === "ALL"
       ? products
@@ -94,13 +128,23 @@ export default function FilterComponent({
 
   const searchResult = filteredProducts.filter(
     (product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category?.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category?.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  // Loading State UI
+  if (isLoading) {
+    return (
+      <div className="text-center py-16 text-slate-500 dark:text-slate-400">
+        Loading catalog...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      {/* Search Input */}
       <div className="relative max-w-xl mx-auto w-full">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
           <svg
@@ -127,6 +171,7 @@ export default function FilterComponent({
         />
       </div>
 
+      {/* Category Pills */}
       <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-3 mask-image-inline scrollbar-none">
         <button
           onClick={() => setSelectedCategory("ALL")}
@@ -153,6 +198,7 @@ export default function FilterComponent({
         ))}
       </div>
 
+      {/* Product Grid / Empty State */}
       {searchResult.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-slate-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 max-w-md mx-auto">
           <svg
