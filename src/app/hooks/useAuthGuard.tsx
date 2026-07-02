@@ -37,7 +37,7 @@ export function useAuthGuard() {
             if (role !== "ADMIN") {
               toast.dismiss();
               toast.error("Access Denied: Admin privileges required.");
-              router.push("/user/auth/login");
+              router.push("/admin/login");
             }
           }
         } else {

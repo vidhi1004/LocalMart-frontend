@@ -74,7 +74,6 @@ import { ProductInterface } from "../interface/product.interface";
 import { CategoryInterface } from "../interface/category.interface";
 import { ProductCard } from "./product_components/ProductCard";
 
-// Assuming API_BASE_URL comes from your env, update this if it's imported from elsewhere
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export default function FilterComponent() {
@@ -88,17 +87,23 @@ export default function FilterComponent() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch both datasets concurrently to save time
         const [productRes, categoryRes] = await Promise.all([
           fetch(`${API_BASE_URL}/catalog/products`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              credentials: "omit",
+            },
           }),
           fetch(`${API_BASE_URL}/catalog/categories`, {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
-          })
+            headers: {
+              "Content-Type": "application/json",
+              credentials: "omit",
+            },
+          }),
         ]);
 
         if (productRes.ok) {

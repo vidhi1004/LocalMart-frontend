@@ -197,9 +197,10 @@ export default function CheckOutComponent({ params }: any) {
         currency: "INR",
         name: "Your Store",
         description: "Order Payment",
-        order_id: payment.RazorpayOrderId,
+        order_id: payment.razorpayOrderId,
         handler: async function (response: any) {
-          console.log(response);
+          console.log("Razorpay Success Response:", response);
+
           const verifyResponse = await fetch(
             `${API_BASE_URL}/payment/${payment.id}`,
             {
@@ -210,12 +211,14 @@ export default function CheckOutComponent({ params }: any) {
               },
               credentials: "include",
               body: JSON.stringify({
+                // Ensure your backend matches these explicit keys!
                 paymentstatus: response.razorpay_payment_id
                   ? "SUCCESS"
                   : "FAILED",
                 paymentMode: response.razorpay_payment_method || "UPI",
                 razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
+                razorpaySignature: response.razorpay_signature, // double-check backend expectation
+                razorpayOrderId: response.razorpay_order_id, // Send this too, backend needs all 3 for HMA-SHA256 verification
               }),
             },
           );
@@ -223,9 +226,9 @@ export default function CheckOutComponent({ params }: any) {
           if (verifyResponse.ok) {
             localStorage.removeItem("cart");
             toast.success("Payment Successful");
-            router.push("/orders");
+            router.push("/user/");
           } else {
-            toast.error("Payment Verification Failed");
+            toast.error("Payment Verification Failed on Server");
           }
         },
         modal: {
@@ -250,6 +253,7 @@ export default function CheckOutComponent({ params }: any) {
           color: "#2563EB",
         },
       };
+
       console.log("Options:", options);
       const razorpay = new window.Razorpay(options);
       razorpay.open();
