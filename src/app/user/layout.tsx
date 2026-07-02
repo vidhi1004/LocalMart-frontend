@@ -68,7 +68,6 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import { useCartStore } from "../../../lib/store/useCart";
-import { useAuthGuard } from "../hooks/useAuthGuard";
 
 export default function UserLayout({
   children,
@@ -77,8 +76,9 @@ export default function UserLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated } = useAuthGuard();
 
+  // Safe client-side auth state that won't cause automatic page redirects
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +89,13 @@ export default function UserLayout({
     0,
   );
 
+  // Check for local authentication state on route changes
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, [pathname]);
+
+  // Handle dropdown click-away toggle
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -104,6 +111,7 @@ export default function UserLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50 dark:bg-gray-950">
+      <Toaster position="top-center" richColors />
       <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md dark:border-gray-800/80 dark:bg-gray-900/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/user" className="flex items-center gap-2">
@@ -158,7 +166,7 @@ export default function UserLayout({
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2.5 w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-md dark:border-gray-800 dark:bg-gray-900 animate-in fade-in zoom-in-95 duration-150 origin-top-right">
-                  {isAuthenticated === false ? (
+                  {!isLoggedIn ? (
                     <>
                       <Link
                         href="/user/auth/login"
@@ -224,7 +232,7 @@ export default function UserLayout({
                 />
               </svg>
 
-              {isAuthenticated === true && totalItems > 0 && (
+              {isLoggedIn && totalItems > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white ring-2 ring-white dark:ring-gray-900 animate-in zoom-in-50 duration-200">
                   {totalItems}
                 </span>

@@ -87,8 +87,6 @@ export default function FilterComponent() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-
-        // Fetch both datasets concurrently to save time
         const [productRes, categoryRes] = await Promise.all([
           fetch(`${API_BASE_URL}/catalog/products`, {
             method: "GET",
