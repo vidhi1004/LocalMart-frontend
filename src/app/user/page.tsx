@@ -1,5 +1,6 @@
 import FilterComponent from "./components/filterComponent";
 import { API_BASE_URL } from "../../../lib/api";
+export const dynamic = "force-dynamic";
 export default async function Home() {
   const fetchProductData = async () => {
     const response = await fetch(`${API_BASE_URL}/catalog/products`, {
