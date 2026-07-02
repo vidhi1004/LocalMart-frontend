@@ -198,8 +198,9 @@ export default function CheckOutComponent({ params }) {
         description: "Order Payment",
         order_id: payment.razorpayOrderId,
         handler: async function (response: any) {
+          console.log(response);
           const verifyResponse = await fetch(
-            `${API_BASE_URL}/payment/${payment.paymentId}`,
+            `${API_BASE_URL}/payment/${payment.id}`,
             {
               method: "PATCH",
               headers: {
@@ -208,8 +209,10 @@ export default function CheckOutComponent({ params }) {
               },
               credentials: "include",
               body: JSON.stringify({
-                paymentstatus: "SUCCESS",
-                paymentMode: "UPI",
+                paymentstatus: response.razorpay_payment_id
+                  ? "SUCCESS"
+                  : "FAILED",
+                paymentMode: response.razorpay_payment_method || "UPI",
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpaySignature: response.razorpay_signature,
               }),
@@ -226,7 +229,7 @@ export default function CheckOutComponent({ params }) {
         },
         modal: {
           ondismiss: async function () {
-            await fetch(`${API_BASE_URL}/payment/${payment.paymentId}`, {
+            await fetch(`${API_BASE_URL}/payment/${payment.id}`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",

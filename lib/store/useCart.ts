@@ -1,3 +1,4 @@
+import { CartItem } from "@/app/user/components/cartComponent/CartComponent";
 import { create } from "zustand";
 
 export const useCartStore = create((set) => ({
@@ -6,10 +7,10 @@ export const useCartStore = create((set) => ({
       ? JSON.parse(localStorage.getItem("cart") || "[]")
       : [],
 
-  addToCart: (item) =>
-    set((state) => {
+  addToCart: (item: CartItem) =>
+    set((state: any) => {
       const exists = state.cart.find(
-        (i) => i.productVariantId === item.productVariantId,
+        (i: any) => i.productVariantId === item.productVariantId,
       );
       let updatedCart;
 
@@ -27,17 +28,17 @@ export const useCartStore = create((set) => ({
       return { cart: updatedCart };
     }),
 
-  removeFromCart: (productVariantId) =>
-    set((state) => {
+  removeFromCart: (productVariantId: any) =>
+    set((state: any) => {
       const updatedCart = state.cart.filter(
-        (item) => item.productVariantId !== productVariantId,
+        (item: any) => item.productVariantId !== productVariantId,
       );
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return { cart: updatedCart };
     }),
 
-  increaseQuantity: (id) =>
-    set((state) => {
+  increaseQuantity: (id: any) =>
+    set((state: any) => {
       const updated = state.cart.map((i) =>
         i.productVariantId === id ? { ...i, quantity: i.quantity + 1 } : i,
       );
@@ -45,13 +46,13 @@ export const useCartStore = create((set) => ({
       return { cart: updated };
     }),
 
-  decreaseQuantity: (id) =>
-    set((state) => {
+  decreaseQuantity: (id: any) =>
+    set((state: any) => {
       const updated = state.cart
-        .map((i) =>
+        .map((i: any) =>
           i.productVariantId === id ? { ...i, quantity: i.quantity - 1 } : i,
         )
-        .filter((i) => i.quantity > 0);
+        .filter((i: any) => i.quantity > 0);
       localStorage.setItem("cart", JSON.stringify(updated));
       return { cart: updated };
     }),
