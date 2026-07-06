@@ -1,5 +1,5 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://localmart-api-gateway.onrender.com";
+  "http://localhost:3000";
 
 // export const API_BASE_URL = rawUrl.endsWith("/") ? rawUrl : `${rawUrl}/`;
